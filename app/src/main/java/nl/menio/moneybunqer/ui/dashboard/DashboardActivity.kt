@@ -6,6 +6,7 @@ import android.os.Bundle
 import nl.menio.moneybunqer.R
 import nl.menio.moneybunqer.databinding.ActivityDashboardBinding
 import nl.menio.moneybunqer.ui.BaseActivity
+import nl.menio.moneybunqer.ui.onboarding.OnboardingActivity
 
 class DashboardActivity : BaseActivity(), DashboardViewModel.Listener {
 
@@ -25,7 +26,12 @@ class DashboardActivity : BaseActivity(), DashboardViewModel.Listener {
         setContentView(R.layout.activity_dashboard)
     }
 
-    override fun onAPIKeyNotSet() {
+    override fun onResume() {
+        super.onResume()
+        viewModel?.showDashBoard()
+    }
 
+    override fun onAPIKeyNotSet() {
+        OnboardingActivity.startActivity(this)
     }
 }

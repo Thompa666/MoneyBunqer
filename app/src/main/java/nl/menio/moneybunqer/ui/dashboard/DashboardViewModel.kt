@@ -2,11 +2,9 @@ package nl.menio.moneybunqer.ui.dashboard
 
 import android.arch.lifecycle.ViewModel
 import android.util.Log
-import nl.menio.moneybunqer.data.BunqConfiguration
+import nl.menio.moneybunqer.utils.ApiUtils
 
 class DashboardViewModel : ViewModel() {
-
-    private val bunqConfiguration = BunqConfiguration.getInstance()
 
     private var listener: Listener? = null
 
@@ -21,18 +19,14 @@ class DashboardViewModel : ViewModel() {
     fun showDashBoard() {
 
         // Check if API key is configured first
-        if (!isApiKeyConfigured()) {
-            Log.w(TAG, "API key not configured!")
+        val apiContext = ApiUtils.getApiContext()
+        if (apiContext == null) {
+            Log.w(TAG, "API not configured!")
             listener?.onAPIKeyNotSet()
             return
         }
 
         // Show the total amount saved
-    }
-
-    fun isApiKeyConfigured() : Boolean {
-        val apiKey = bunqConfiguration.getAPIKey()
-        return apiKey != null
     }
 
     companion object {

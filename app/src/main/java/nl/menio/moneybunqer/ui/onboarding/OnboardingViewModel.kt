@@ -6,14 +6,12 @@ import android.databinding.ObservableField
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import nl.menio.moneybunqer.data.BunqConfiguration
+import nl.menio.moneybunqer.utils.ApiUtils
 
 class OnboardingViewModel : ViewModel() {
 
     public val uiApiKey = ObservableField<String>()
     public val uiCanSave = ObservableBoolean()
-
-    private val bunqConfiguration: BunqConfiguration = BunqConfiguration.getInstance()
 
     private var listener: Listener? = null
 
@@ -25,15 +23,6 @@ class OnboardingViewModel : ViewModel() {
         this.listener = listener
     }
 
-    fun showCurrentConfiguration() {
-
-        // Show current API key
-        val apiKey = bunqConfiguration.getAPIKey()
-        if (apiKey != null) {
-            uiApiKey.set(apiKey)
-        }
-    }
-
     fun checkInputAndUpdateControls() {
         val apiKeyProvided = !TextUtils.isEmpty(uiApiKey.get())
         uiCanSave.set(apiKeyProvided)
@@ -41,8 +30,11 @@ class OnboardingViewModel : ViewModel() {
 
     fun save() {
         val apiKey = uiApiKey.get()
-        bunqConfiguration.setAPIKey(apiKey)
-        listener?.onSave()
+        if (!TextUtils.isEmpty(apiKey)) {
+            ApiUtils.create(apiKey)
+        } else {
+            return
+        }
     }
 
     public val apiKeyChangedListener = object : TextWatcher {
@@ -51,7 +43,7 @@ class OnboardingViewModel : ViewModel() {
         }
 
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            // Do notging
+            // Do nothing
         }
 
         override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -60,7 +52,10 @@ class OnboardingViewModel : ViewModel() {
                 checkInputAndUpdateControls()
             }
         }
+    }
 
+    companion object {
+        val TAG = OnboardingViewModel::class.java.simpleName
     }
 
     public interface Listener {

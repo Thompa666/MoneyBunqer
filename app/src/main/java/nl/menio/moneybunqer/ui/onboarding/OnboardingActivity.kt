@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.os.PersistableBundle
 import nl.menio.moneybunqer.R
 import nl.menio.moneybunqer.databinding.ActivityOnboardingBinding
 import nl.menio.moneybunqer.ui.BaseActivity
@@ -15,8 +14,8 @@ class OnboardingActivity : BaseActivity(), OnboardingViewModel.Listener {
     private var binding: ActivityOnboardingBinding? = null
     private var viewModel: OnboardingViewModel? = null
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         viewModel = ViewModelProviders.of(this).get(OnboardingViewModel::class.java)
         viewModel?.setListener(this)
@@ -24,7 +23,6 @@ class OnboardingActivity : BaseActivity(), OnboardingViewModel.Listener {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_onboarding)
         binding?.viewModel = viewModel
-        viewModel?.showCurrentConfiguration()
     }
 
     override fun onSave() {
