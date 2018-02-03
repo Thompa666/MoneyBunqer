@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">@color/bunq_blue_light</color>
+    <color name="colorPrimaryDark">@color/bunq_blue_dark</color>
+    <color name="colorAccent">@color/bunq_red</color>
+
+    <color name="bunq_green_dark">#238647</color>
+    <color name="bunq_green">#2f9b47</color>
+    <color name="bunq_green_light">#62b64f</color>
+    <color name="bunq_green_very_light">#89cc53</color>
+    <color name="bunq_blue_very_light">#3db8ad</color>
+    <color name="bunq_blue_light">#3394d7</color>
+    <color name="bunq_blue">#2872bc</color>
+    <color name="bunq_blue_dark">#1d5c84</color>
+    <color name="bunq_red_dark">#993233</color>
+    <color name="bunq_red">#e13030</color>
+    <color name="bunq_orange">#f28825</color>
+    <color name="bunq_yellow">#f5c836</color>
 
     <color name="white">#ffffff</color>
     <color name="black">@android:color/black</color>
     <color name="gray_light">#999999</color>
 
-    <color name="font_title">@color/colorAccent</color>
+    <color name="font_title">@color/bunq_red_dark</color>
     <color name="font_default">@color/black</color>
 
 </resources>

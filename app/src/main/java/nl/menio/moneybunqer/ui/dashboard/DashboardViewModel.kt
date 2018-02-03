@@ -2,15 +2,20 @@ package nl.menio.moneybunqer.ui.dashboard
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableField
+import android.icu.util.Currency
+import android.text.Spannable
 import android.util.Log
+import com.bunq.sdk.model.generated.`object`.Amount
 import com.bunq.sdk.model.generated.endpoint.MonetaryAccount
 import nl.menio.moneybunqer.BunqPreferences
 import nl.menio.moneybunqer.network.BunqConnector
 import nl.menio.moneybunqer.utils.ApiUtils
+import nl.menio.moneybunqer.utils.FormattingUtils
+import nl.menio.moneybunqer.utils.FormattingUtils.Companion.EMPTY_AMOUNT_STRING
 
 class DashboardViewModel : ViewModel() {
 
-    val totalBalance = ObservableField<String>()
+    val totalBalance = ObservableField<Spannable>()
 
     private val bunqConnector = BunqConnector.getInstance()
     private val bunqPreferences = BunqPreferences.getInstance()
@@ -56,8 +61,14 @@ class DashboardViewModel : ViewModel() {
     }
 
     private fun calculateTotalBalance(monetaryAccounts: List<MonetaryAccount>) {
-        val total = monetaryAccounts.sumByDouble { it.monetaryAccountBank.balance.value.toDouble() }
-        totalBalance.set("$total")
+        if (monetaryAccounts.isNotEmpty()) {
+            val total = monetaryAccounts.sumByDouble { it.monetaryAccountBank.balance.value.toDouble() }
+            val currency = monetaryAccounts.first().monetaryAccountBank.currency
+            val amount = Amount(total.toString(), currency)
+            totalBalance.set(FormattingUtils.getFormattedAmount(amount))
+        } else {
+            totalBalance.set(null)
+        }
     }
 
     companion object {

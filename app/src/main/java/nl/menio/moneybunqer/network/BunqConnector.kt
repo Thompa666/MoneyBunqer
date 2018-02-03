@@ -1,6 +1,8 @@
 package nl.menio.moneybunqer.network
 
 import android.os.AsyncTask
+import com.bunq.sdk.model.generated.endpoint.AttachmentPublicContent
+import com.bunq.sdk.model.generated.endpoint.Avatar
 import com.bunq.sdk.model.generated.endpoint.MonetaryAccount
 import com.bunq.sdk.model.generated.endpoint.User
 import nl.menio.moneybunqer.BunqPreferences
@@ -30,7 +32,8 @@ class BunqConnector {
         ListMonetaryAccountsTask(listener).execute()
     }
 
-    private class ListUsersTask(val listener: OnListUsersListener) : AsyncTask<Void, Void, List<User>>() {
+    private class ListUsersTask(val listener: OnListUsersListener)
+        : AsyncTask<Void, Void, List<User>>() {
         override fun doInBackground(vararg params: Void?): List<User> {
             val apiContext = ApiUtils.getApiContext()
             val response = User.list(apiContext)
@@ -46,7 +49,8 @@ class BunqConnector {
         }
     }
 
-    private class ListMonetaryAccountsTask(val listener: OnListMonetaryAccountsListener) : AsyncTask<Void, Void, List<MonetaryAccount>>() {
+    private class ListMonetaryAccountsTask(val listener: OnListMonetaryAccountsListener)
+        : AsyncTask<Void, Void, List<MonetaryAccount>>() {
         override fun doInBackground(vararg p0: Void?): List<MonetaryAccount> {
             val apiContext = ApiUtils.getApiContext()
             val userId = BunqPreferences.getInstance().getDefaultUserId()
@@ -63,6 +67,30 @@ class BunqConnector {
         }
     }
 
+    private class GetAvatarTask(val uuid: String) : AsyncTask<Void, Void, Avatar>() {
+        override fun doInBackground(vararg params: Void?): Avatar {
+            val response = Avatar.get(ApiUtils.getApiContext(), uuid)
+            return response.value
+        }
+    }
+
+    private class GetAttachmentPublicContentTask(val attachmentPublicUuid: String, val listener: OnGetAttachmentPublicContentListener)
+        : AsyncTask<Void, Void, ByteArray>() {
+        override fun doInBackground(vararg params: Void?): ByteArray {
+            val response = AttachmentPublicContent.list(ApiUtils.getApiContext(), attachmentPublicUuid)
+            return response.value
+        }
+
+        override fun onPostExecute(result: ByteArray?) {
+            if (result != null) {
+                listener.onGetAttachmentPublicContentSuccess(result)
+            } else {
+                listener.onGetAttachmentPublicContentError()
+            }
+        }
+    }
+
+
     interface OnListUsersListener {
         fun onListUsersSuccess(users: List<User>)
         fun onListUsersError()
@@ -71,5 +99,10 @@ class BunqConnector {
     interface OnListMonetaryAccountsListener {
         fun onListMonetaryAccountsSuccess(monetaryAccounts: List<MonetaryAccount>)
         fun onListMonetaryAccountsError()
+    }
+
+    interface OnGetAttachmentPublicContentListener {
+        fun onGetAttachmentPublicContentSuccess(bytes: ByteArray)
+        fun onGetAttachmentPublicContentError()
     }
 }
