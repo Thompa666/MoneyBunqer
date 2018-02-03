@@ -6,9 +6,10 @@ import android.databinding.ObservableField
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import com.bunq.sdk.context.ApiContext
 import nl.menio.moneybunqer.utils.ApiUtils
 
-class OnboardingViewModel : ViewModel() {
+class OnboardingViewModel : ViewModel(), ApiUtils.ApiContextCreateListener {
 
     public val uiApiKey = ObservableField<String>()
     public val uiCanSave = ObservableBoolean()
@@ -31,10 +32,18 @@ class OnboardingViewModel : ViewModel() {
     fun save() {
         val apiKey = uiApiKey.get()
         if (!TextUtils.isEmpty(apiKey)) {
-            ApiUtils.create(apiKey)
+            ApiUtils.create(apiKey, this)
         } else {
             return
         }
+    }
+
+    override fun onApiContextCreateSuccess(apiContext: ApiContext) {
+        listener?.onSave()
+    }
+
+    override fun onApiContextCreateError() {
+        listener?.onError("Could not create API context.")
     }
 
     public val apiKeyChangedListener = object : TextWatcher {
@@ -60,5 +69,6 @@ class OnboardingViewModel : ViewModel() {
 
     public interface Listener {
         fun onSave()
+        fun onError(message: String)
     }
 }

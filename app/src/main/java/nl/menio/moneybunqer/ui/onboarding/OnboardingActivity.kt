@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.widget.Toast
 import nl.menio.moneybunqer.R
 import nl.menio.moneybunqer.databinding.ActivityOnboardingBinding
 import nl.menio.moneybunqer.ui.BaseActivity
@@ -27,6 +28,10 @@ class OnboardingActivity : BaseActivity(), OnboardingViewModel.Listener {
 
     override fun onSave() {
         finish()
+    }
+
+    override fun onError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     companion object {

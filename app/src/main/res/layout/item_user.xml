@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="displayName"
+            type="String"/>
+        <variable
+            name="legalName"
+            type="String"/>
+        <variable
+            name="dateOfBirth"
+            type="String"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/margin_default"
+        android:paddingEnd="@dimen/margin_default"
+        android:paddingTop="@dimen/margin_medium"
+        android:paddingBottom="@dimen/margin_medium"
+        android:foreground="?attr/selectableItemBackground">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_big"
+            android:textColor="@color/black"
+            android:text="@{displayName}"
+            tools:text="FirstName Surname"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_tiny"
+                android:textColor="@color/gray_light"
+                android:text="Legal name: "/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_tiny"
+                android:textColor="@color/gray_light"
+                android:text="@{legalName}"
+                tools:text="FirstName Surname"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_tiny"
+                android:textColor="@color/gray_light"
+                android:text="Date of birth: " />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_tiny"
+                android:textColor="@color/gray_light"
+                android:text="@{dateOfBirth}"
+                tools:text="2018-01-01"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>
+

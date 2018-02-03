@@ -22,6 +22,8 @@
 
         <activity android:name=".ui.onboarding.OnboardingActivity" />
 
+        <activity android:name=".ui.chooseuser.ChooseUserActivity" />
+
     </application>
 
 </manifest>
