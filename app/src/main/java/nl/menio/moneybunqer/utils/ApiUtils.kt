@@ -11,9 +11,14 @@ class ApiUtils {
         val TAG = ApiUtils::class.java.simpleName
 
         fun create(apiKey: String) {
-            val deviceDescription = "MoneyBunq/${Build.DEVICE}"
-            val apiContext = ApiContext.create(ApiEnvironmentType.SANDBOX, apiKey, deviceDescription)
-            apiContext.save()
+            object : Thread() {
+                override fun run() {
+                    val deviceDescription = "MoneyBunq/${Build.DEVICE}"
+                    val apiContext = ApiContext.create(ApiEnvironmentType.SANDBOX, apiKey, deviceDescription)
+                    apiContext.save()
+                }
+            }.start()
+
         }
 
         fun getApiContext() : ApiContext? {
