@@ -23,6 +23,7 @@
         android:paddingEnd="@dimen/margin_default"
         android:paddingTop="@dimen/margin_medium"
         android:paddingBottom="@dimen/margin_medium"
+        android:background="@color/white"
         android:foreground="?attr/selectableItemBackground">
 
         <TextView

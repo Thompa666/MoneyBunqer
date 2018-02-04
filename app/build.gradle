@@ -62,6 +62,12 @@ dependencies {
     // Bunq SDK
     //implementation 'com.github.bunq:sdk_java:develop-SNAPSHOT'
     implementation project(':sdk_java')
+    // Circle image view
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    // Caching
+    compile('com.github.lowlevel-studios:storo:1.2.0') {
+        transitive = true
+    }
     // Testing
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'

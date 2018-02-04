@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.bunq.sdk.model.generated.endpoint.User
 import nl.menio.moneybunqer.R
 import nl.menio.moneybunqer.databinding.ItemUserBinding
+import nl.menio.moneybunqer.ui.viewholders.UserViewHolder
 
 class UserAdapter : RecyclerView.Adapter<UserViewHolder>() {
 

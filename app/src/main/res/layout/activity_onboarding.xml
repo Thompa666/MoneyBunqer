@@ -17,7 +17,8 @@
         android:paddingTop="@dimen/margin_default"
         android:paddingBottom="@dimen/margin_default"
         android:fillViewport="true"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"

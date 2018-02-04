@@ -16,7 +16,7 @@ class FormattingUtils {
 
         const val EMPTY_AMOUNT_STRING = "-,-"
 
-        fun getFormattedAmount(amount: Amount) : Spannable {
+        fun getFormattedAmount(amount: Amount, showCurrency: Boolean = false) : Spannable {
             val locale = Locale.getDefault()
             val amountDouble = amount.value.toDouble()
 
@@ -24,7 +24,9 @@ class FormattingUtils {
             val spannableBuilder = SpannableStringBuilder()
             val currencyStyleSpan = RelativeSizeSpan(.5f)
             val fractionStyleSpan = RelativeSizeSpan(.45f)
-            spannableBuilder.append(Currency.getInstance(amount.currency).getSymbol(locale), currencyStyleSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            if (showCurrency) {
+                spannableBuilder.append(Currency.getInstance(amount.currency).getSymbol(locale), currencyStyleSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
             spannableBuilder.append(Math.floor(amountDouble).toInt().toString())
             spannableBuilder.append(DecimalFormat("#.00").format(amountDouble - Math.floor(amountDouble)), fractionStyleSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             return spannableBuilder

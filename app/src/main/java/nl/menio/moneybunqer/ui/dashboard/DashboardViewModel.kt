@@ -5,30 +5,43 @@ import android.databinding.ObservableField
 import android.icu.util.Currency
 import android.text.Spannable
 import android.util.Log
+import android.widget.Toast
 import com.bunq.sdk.model.generated.`object`.Amount
 import com.bunq.sdk.model.generated.endpoint.MonetaryAccount
+import com.bunq.sdk.model.generated.endpoint.Payment
+import com.bunq.sdk.model.generated.endpoint.User
 import nl.menio.moneybunqer.BunqPreferences
+import nl.menio.moneybunqer.MoneyBunqerConfiguration.DASHBOARD_PAYMENTS_COUNT
+import nl.menio.moneybunqer.data.MonetaryAccountRepository
+import nl.menio.moneybunqer.data.PaymentRepository
+import nl.menio.moneybunqer.data.UserRepository
 import nl.menio.moneybunqer.network.BunqConnector
+import nl.menio.moneybunqer.ui.viewholders.PaymentViewHolder
 import nl.menio.moneybunqer.utils.ApiUtils
 import nl.menio.moneybunqer.utils.FormattingUtils
 import nl.menio.moneybunqer.utils.FormattingUtils.Companion.EMPTY_AMOUNT_STRING
 
-class DashboardViewModel : ViewModel() {
+class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListener {
 
     val totalBalance = ObservableField<Spannable>()
 
-    private val bunqConnector = BunqConnector.getInstance()
     private val bunqPreferences = BunqPreferences.getInstance()
+    private val monetaryAccountsRepository = MonetaryAccountRepository.getInstance()
+    private val userRepository = UserRepository.getInstance()
+    private val paymentsRepository = PaymentRepository.getInstance()
+    private val adapter = DashboardAdapter()
 
     private var listener: Listener? = null
 
     fun init() {
-        // Do something here
+        adapter.setOnPaymentClickedListener(this)
     }
 
     fun setListener(listener: Listener) {
         this.listener = listener
     }
+
+    fun getAdapter(): DashboardAdapter = adapter
 
     fun showDashBoard() {
         val apiContext = ApiUtils.getApiContext()
@@ -45,13 +58,22 @@ class DashboardViewModel : ViewModel() {
             return
         }
 
+        // Get the user information
+        userRepository.getUser(false, object : BunqConnector.OnGetUserListener {
+            override fun onGetUserSuccess(user: User) {
+                updateUserInformation(user)
+            }
+
+            override fun onGetUserError() {
+                listener?.onError("User could not be loaded.")
+            }
+        })
+
         // Load the default users monetary accounts
-        bunqConnector.listMonetaryAccounts(object : BunqConnector.OnListMonetaryAccountsListener {
+        monetaryAccountsRepository.getMonetaryAccounts(false, object : BunqConnector.OnListMonetaryAccountsListener {
             override fun onListMonetaryAccountsSuccess(monetaryAccounts: List<MonetaryAccount>) {
-                for (monetaryAccount in monetaryAccounts) {
-                    Log.d(TAG, "Got monetary account: $monetaryAccount")
-                }
                 calculateTotalBalance(monetaryAccounts)
+                loadTransactions(monetaryAccounts)
             }
 
             override fun onListMonetaryAccountsError() {
@@ -60,15 +82,51 @@ class DashboardViewModel : ViewModel() {
         })
     }
 
+    private fun updateUserInformation(user: User) {
+        listener?.onLoadAvatar(user.userPerson.avatar.image.first().attachmentPublicUuid)
+    }
+
     private fun calculateTotalBalance(monetaryAccounts: List<MonetaryAccount>) {
         if (monetaryAccounts.isNotEmpty()) {
             val total = monetaryAccounts.sumByDouble { it.monetaryAccountBank.balance.value.toDouble() }
             val currency = monetaryAccounts.first().monetaryAccountBank.currency
             val amount = Amount(total.toString(), currency)
-            totalBalance.set(FormattingUtils.getFormattedAmount(amount))
+            totalBalance.set(FormattingUtils.getFormattedAmount(amount, true))
         } else {
             totalBalance.set(null)
         }
+    }
+
+    private fun loadTransactions(monetaryAccounts: List<MonetaryAccount>) {
+        val allPayments = ArrayList<PaymentViewHolder.MonetaryAccountPayment>()
+        for (monetaryAccount in monetaryAccounts) {
+            val monetaryAccountId = monetaryAccount.monetaryAccountBank.id
+            paymentsRepository.getPayments(false, monetaryAccountId, object : BunqConnector.OnListPaymentsListener {
+                override fun onListPaymentsSuccess(payments: List<Payment>) {
+                    processPayments(allPayments, payments, monetaryAccount)
+                }
+
+                override fun onListPaymentsError() {
+                    listener?.onError("Could not load payments from ${monetaryAccount.monetaryAccountBank.description}")
+                }
+            })
+        }
+    }
+
+    private fun processPayments(allPayments: MutableList<PaymentViewHolder.MonetaryAccountPayment>, newPayments: List<Payment>, monetaryAccount: MonetaryAccount) {
+        val newMonetaryAccountPayments = ArrayList<PaymentViewHolder.MonetaryAccountPayment>()
+        newPayments.mapTo(newMonetaryAccountPayments) { PaymentViewHolder.MonetaryAccountPayment(monetaryAccount, it) }
+        allPayments.addAll(newMonetaryAccountPayments)
+        allPayments.sortByDescending { it.payment.id }
+        val subPayments = ArrayList<PaymentViewHolder.MonetaryAccountPayment>()
+        for (i in 0 until Math.min(DASHBOARD_PAYMENTS_COUNT, allPayments.size)) {
+            subPayments.add(allPayments[i])
+        }
+        adapter.setItems(subPayments)
+    }
+
+    override fun onPaymentClicked(payment: Payment) {
+        // TODO:
     }
 
     companion object {
@@ -78,6 +136,7 @@ class DashboardViewModel : ViewModel() {
     public interface Listener {
         fun onAPIKeyNotSet()
         fun onUserNotSet()
+        fun onLoadAvatar(uuid: String)
         fun onError(message: String)
     }
 }

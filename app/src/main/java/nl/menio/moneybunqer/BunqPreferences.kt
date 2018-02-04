@@ -39,11 +39,22 @@ class BunqPreferences(private val context: Context) {
         return if (userId != Int.MIN_VALUE) userId else null
     }
 
+    fun setShowAccountBalances(showAccountBalances: Boolean) {
+        prefs.edit().putBoolean(KEY_SHOW_ACCOUNT_BALANCES, showAccountBalances).apply()
+    }
+
+    fun getShowAccountBalances() : Boolean {
+        return prefs.getBoolean(KEY_SHOW_ACCOUNT_BALANCES, SHOW_ACCOUNT_BALANCES_DEFAULT)
+    }
+
     companion object {
         val TAG = BunqPreferences::class.java.simpleName
 
         const val KEY_API_CONTEXT = "bunq.apiContext"
         const val KEY_DEFAULT_USER_ID = "bunq.defaultUserId"
+        const val KEY_SHOW_ACCOUNT_BALANCES = "moneyBunq.showAccountBalances"
+
+        const val SHOW_ACCOUNT_BALANCES_DEFAULT = true
 
         @SuppressLint("StaticFieldLeak")
         private var singleton: BunqPreferences? = null

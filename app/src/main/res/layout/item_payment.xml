@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_default"
+        android:paddingEnd="@dimen/margin_default"
+        android:paddingTop="@dimen/margin_medium"
+        android:paddingBottom="@dimen/margin_medium"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_default">
+
+            <nl.menio.moneybunqer.utils.BunqCircleImageView
+                android:id="@+id/avatarContact"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/background_circle_gray_very_light"/>
+
+            <nl.menio.moneybunqer.utils.BunqCircleImageView
+                android:id="@+id/avatarAccount"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="@dimen/margin_default"
+                android:layout_marginEnd="@dimen/margin_none"
+                android:background="@drawable/background_circle_gray"/>
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/contact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_default"
+                android:textColor="@color/black"
+                android:singleLine="true"
+                android:ellipsize="end"
+                tools:text="Name"/>
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_tiny"
+                android:textColor="@color/gray_light"
+                tools:text="Description"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginEnd="@dimen/margin_none"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_medium_big"
+            tools:text="€ 1,23"/>
+
+    </LinearLayout>
+
+</layout>

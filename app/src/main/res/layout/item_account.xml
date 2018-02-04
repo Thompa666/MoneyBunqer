@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_default"
+        android:paddingEnd="@dimen/margin_default"
+        android:paddingTop="@dimen/margin_medium"
+        android:paddingBottom="@dimen/margin_medium"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground">
+
+        <nl.menio.moneybunqer.utils.BunqCircleImageView
+            android:id="@+id/avatar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:layout_marginStart="@dimen/margin_none"
+            android:background="@drawable/background_circle_gray"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_medium_big"
+                android:singleLine="true"
+                android:ellipsize="end"
+                tools:text="Account"/>
+
+            <TextView
+                android:id="@+id/iban"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/gray_light"
+                android:textSize="@dimen/font_tiny"
+                android:textAllCaps="true"
+                android:singleLine="true"
+                android:ellipsize="middle"
+                tools:text="NL12BUNQ123456789"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginEnd="@dimen/margin_none"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_big"
+            tools:text="€ 1234,00"/>
+
+    </LinearLayout>
+
+</layout>

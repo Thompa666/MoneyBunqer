@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import com.bunq.sdk.model.generated.endpoint.User
 import nl.menio.moneybunqer.BunqPreferences
 import nl.menio.moneybunqer.network.BunqConnector
+import nl.menio.moneybunqer.ui.viewholders.UserViewHolder
 
 class ChooseUserViewModel : ViewModel(), BunqConnector.OnListUsersListener, UserViewHolder.OnUserClickedListener {
 

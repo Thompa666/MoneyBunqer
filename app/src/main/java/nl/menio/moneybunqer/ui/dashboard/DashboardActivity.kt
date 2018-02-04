@@ -3,10 +3,14 @@ package nl.menio.moneybunqer.ui.dashboard
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import nl.menio.moneybunqer.R
 import nl.menio.moneybunqer.databinding.ActivityDashboardBinding
 import nl.menio.moneybunqer.ui.BaseActivity
+import nl.menio.moneybunqer.ui.chooseaccount.ChooseAccountDialog
 import nl.menio.moneybunqer.ui.chooseuser.ChooseUserActivity
 import nl.menio.moneybunqer.ui.onboarding.OnboardingActivity
 
@@ -24,6 +28,15 @@ class DashboardActivity : BaseActivity(), DashboardViewModel.Listener {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard)
         binding?.viewModel = viewModel
+        binding?.items?.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding?.items?.itemAnimator = DefaultItemAnimator()
+        binding?.items?.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+        binding?.items?.adapter = viewModel?.getAdapter()
+
+        /*binding?.avatar?.setOnClickListener { _ ->
+            val fragment = ChooseAccountDialog.getInstance()
+            fragment.show(supportFragmentManager, ChooseAccountDialog.TAG)
+        }*/
     }
 
     override fun onResume() {
@@ -37,6 +50,10 @@ class DashboardActivity : BaseActivity(), DashboardViewModel.Listener {
 
     override fun onUserNotSet() {
         ChooseUserActivity.startActivity(this)
+    }
+
+    override fun onLoadAvatar(uuid: String) {
+        //binding?.avatar?.setAttachmentPublicUuid(uuid)
     }
 
     override fun onError(message: String) {

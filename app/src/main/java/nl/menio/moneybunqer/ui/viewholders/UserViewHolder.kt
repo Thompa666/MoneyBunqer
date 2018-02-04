@@ -1,4 +1,4 @@
-package nl.menio.moneybunqer.ui.chooseuser
+package nl.menio.moneybunqer.ui.viewholders
 
 import android.support.v7.widget.RecyclerView
 import com.bunq.sdk.model.generated.endpoint.User
