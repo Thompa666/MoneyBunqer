@@ -4,8 +4,8 @@ buildscript {
     ext.kotlinVersion = '1.2.20'
     ext.androidPluginVersion = '3.0.1'
     ext.retrofitVersion = '2.3.0'
-    ext.supportVersion = '27.0.2'
-    ext.componentsVersion = '1.1.0'
+    ext.supportVersion = '27.1.1'
+    ext.componentsVersion = '1.1.1'
 
     repositories {
         google()

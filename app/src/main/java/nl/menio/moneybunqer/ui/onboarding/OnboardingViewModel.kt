@@ -7,12 +7,14 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import com.bunq.sdk.context.ApiContext
-import nl.menio.moneybunqer.utils.ApiUtils
+import nl.menio.moneybunqer.network.BunqConnector
 
-class OnboardingViewModel : ViewModel(), ApiUtils.ApiContextCreateListener {
+class OnboardingViewModel : ViewModel(), BunqConnector.ApiContextCreateListener {
 
     public val uiApiKey = ObservableField<String>()
     public val uiCanSave = ObservableBoolean()
+
+    private val bunqConnector = BunqConnector.getInstance()
 
     private var listener: Listener? = null
 
@@ -32,7 +34,7 @@ class OnboardingViewModel : ViewModel(), ApiUtils.ApiContextCreateListener {
     fun save() {
         val apiKey = uiApiKey.get()
         if (!TextUtils.isEmpty(apiKey)) {
-            ApiUtils.create(apiKey, this)
+            bunqConnector.create(apiKey, this)
         } else {
             return
         }

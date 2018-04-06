@@ -25,6 +25,22 @@ class MonetaryAccountRepository : Repository() {
         }
     }
 
+    fun getAccountNameForIban(iban: String) : String {
+        val monetaryAccounts = cachedMonetaryAccounts
+        var matchingMonetaryAccount: MonetaryAccount? = null
+        if (monetaryAccounts != null) {
+            for (monetaryAccount in monetaryAccounts) {
+                for (alias in monetaryAccount.monetaryAccountBank.alias) {
+                    if (alias.type == "IBAN" && alias.value == iban) {
+                        matchingMonetaryAccount = monetaryAccount
+                        break
+                    }
+                }
+            }
+        }
+        return matchingMonetaryAccount?.monetaryAccountBank?.description ?: iban
+    }
+
     companion object {
         val TAG: String = MonetaryAccountRepository::class.java.simpleName
 

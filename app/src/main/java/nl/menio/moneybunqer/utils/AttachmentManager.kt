@@ -23,7 +23,7 @@ class AttachmentManager(private val context: Context) {
                 .setDefaultCacheDirectory(context)
                 .initialize()
         if (CLEAR_DATA_ON_START) {
-            Storo.clear()
+            //Storo.clear()
         }
     }
 
@@ -65,6 +65,7 @@ class AttachmentManager(private val context: Context) {
             processWaitingListeners(objectKey, bytes)
         } else if (hasWaitingListeners(objectKey)) {
             queueWaitingListener(objectKey, listener)
+            //processWaitingListeners(objectKey)
         } else {
             bunqConnector.getAttachmentPublicContent(attachmentPublicUuid, object : BunqConnector.OnGetAttachmentPublicContentListener {
                 override fun onGetAttachmentPublicContentSuccess(bytes: ByteArray) {
@@ -78,6 +79,7 @@ class AttachmentManager(private val context: Context) {
                     handler.postDelayed({
                         getAttachmentBitmap(attachmentPublicUuid, listener)
                     }, DELAY_BETWEEN_CALLS_MILLISECONDS)
+                    queueWaitingListener(objectKey, listener)
                 }
 
                 override fun onGetAttachmentPublicContentError() {
@@ -90,7 +92,7 @@ class AttachmentManager(private val context: Context) {
     companion object {
         val TAG: String = AttachmentManager::class.java.simpleName
 
-        private const val DELAY_BETWEEN_CALLS_MILLISECONDS: Long = 3200
+        private const val DELAY_BETWEEN_CALLS_MILLISECONDS: Long = 1000
         private const val PREFIX_BITMAP_CACHE = "bitmap"
 
         @SuppressLint("StaticFieldLeak")

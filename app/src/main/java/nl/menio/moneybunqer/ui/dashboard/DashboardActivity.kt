@@ -10,8 +10,6 @@ import android.widget.Toast
 import nl.menio.moneybunqer.R
 import nl.menio.moneybunqer.databinding.ActivityDashboardBinding
 import nl.menio.moneybunqer.ui.BaseActivity
-import nl.menio.moneybunqer.ui.chooseaccount.ChooseAccountDialog
-import nl.menio.moneybunqer.ui.chooseuser.ChooseUserActivity
 import nl.menio.moneybunqer.ui.onboarding.OnboardingActivity
 
 class DashboardActivity : BaseActivity(), DashboardViewModel.Listener {
@@ -33,23 +31,11 @@ class DashboardActivity : BaseActivity(), DashboardViewModel.Listener {
         binding?.items?.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
         binding?.items?.adapter = viewModel?.getAdapter()
 
-        /*binding?.avatar?.setOnClickListener { _ ->
-            val fragment = ChooseAccountDialog.getInstance()
-            fragment.show(supportFragmentManager, ChooseAccountDialog.TAG)
-        }*/
-    }
-
-    override fun onResume() {
-        super.onResume()
         viewModel?.showDashBoard()
     }
 
     override fun onAPIKeyNotSet() {
         OnboardingActivity.startActivity(this)
-    }
-
-    override fun onUserNotSet() {
-        ChooseUserActivity.startActivity(this)
     }
 
     override fun onLoadAvatar(uuid: String) {

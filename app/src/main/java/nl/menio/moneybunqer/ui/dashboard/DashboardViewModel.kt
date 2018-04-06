@@ -2,34 +2,34 @@ package nl.menio.moneybunqer.ui.dashboard
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableField
-import android.icu.util.Currency
 import android.text.Spannable
 import android.util.Log
-import android.widget.Toast
 import com.bunq.sdk.model.generated.`object`.Amount
 import com.bunq.sdk.model.generated.endpoint.MonetaryAccount
 import com.bunq.sdk.model.generated.endpoint.Payment
 import com.bunq.sdk.model.generated.endpoint.User
-import nl.menio.moneybunqer.BunqPreferences
-import nl.menio.moneybunqer.MoneyBunqerConfiguration.DASHBOARD_PAYMENTS_COUNT
 import nl.menio.moneybunqer.data.MonetaryAccountRepository
 import nl.menio.moneybunqer.data.PaymentRepository
 import nl.menio.moneybunqer.data.UserRepository
 import nl.menio.moneybunqer.network.BunqConnector
 import nl.menio.moneybunqer.ui.viewholders.PaymentViewHolder
-import nl.menio.moneybunqer.utils.ApiUtils
+import nl.menio.moneybunqer.utils.DateUtils
 import nl.menio.moneybunqer.utils.FormattingUtils
-import nl.menio.moneybunqer.utils.FormattingUtils.Companion.EMPTY_AMOUNT_STRING
+import java.util.*
+import kotlin.math.absoluteValue
+import com.bunq.sdk.model.generated.`object`.Pointer
 
 class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListener {
 
     val totalBalance = ObservableField<Spannable>()
+    val amountToSave = ObservableField<Spannable>()
 
-    private val bunqPreferences = BunqPreferences.getInstance()
     private val monetaryAccountsRepository = MonetaryAccountRepository.getInstance()
     private val userRepository = UserRepository.getInstance()
     private val paymentsRepository = PaymentRepository.getInstance()
     private val adapter = DashboardAdapter()
+
+    private var totalAmountToSave: Double = 0.0
 
     private var listener: Listener? = null
 
@@ -44,19 +44,6 @@ class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListen
     fun getAdapter(): DashboardAdapter = adapter
 
     fun showDashBoard() {
-        val apiContext = ApiUtils.getApiContext()
-        val userId = bunqPreferences.getDefaultUserId()
-
-        // Check if API key is configured first
-        if (apiContext == null) {
-            Log.w(TAG, "API not configured!")
-            listener?.onAPIKeyNotSet()
-            return
-        } else if (userId == null) {
-            Log.w(TAG, "Default user not set!")
-            listener?.onUserNotSet()
-            return
-        }
 
         // Get the user information
         userRepository.getUser(false, object : BunqConnector.OnGetUserListener {
@@ -98,12 +85,31 @@ class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListen
     }
 
     private fun loadTransactions(monetaryAccounts: List<MonetaryAccount>) {
+        val now = Calendar.getInstance()
+
+        // Get the allowed start date
+        val start = Calendar.getInstance()
+        start.time = now.time
+        start.add(Calendar.DAY_OF_MONTH, -1)
+        start.set(Calendar.HOUR_OF_DAY, 0)
+        start.set(Calendar.MINUTE, 0)
+        start.set(Calendar.SECOND, 0)
+        start.set(Calendar.MILLISECOND, 0)
+
+        // Get the allowed end date
+        val end = Calendar.getInstance()
+        end.time = start.time
+        end.add(Calendar.DAY_OF_MONTH, 1)
+        end.add(Calendar.MILLISECOND, -1)
+
+        // Get payments from all accounts
         val allPayments = ArrayList<PaymentViewHolder.MonetaryAccountPayment>()
         for (monetaryAccount in monetaryAccounts) {
             val monetaryAccountId = monetaryAccount.monetaryAccountBank.id
+            Log.d(TAG, "Monetary account ID = " + monetaryAccountId)
             paymentsRepository.getPayments(false, monetaryAccountId, object : BunqConnector.OnListPaymentsListener {
                 override fun onListPaymentsSuccess(payments: List<Payment>) {
-                    processPayments(allPayments, payments, monetaryAccount)
+                    processPayments(allPayments, payments, monetaryAccount, start.time, end.time)
                 }
 
                 override fun onListPaymentsError() {
@@ -113,20 +119,60 @@ class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListen
         }
     }
 
-    private fun processPayments(allPayments: MutableList<PaymentViewHolder.MonetaryAccountPayment>, newPayments: List<Payment>, monetaryAccount: MonetaryAccount) {
-        val newMonetaryAccountPayments = ArrayList<PaymentViewHolder.MonetaryAccountPayment>()
-        newPayments.mapTo(newMonetaryAccountPayments) { PaymentViewHolder.MonetaryAccountPayment(monetaryAccount, it) }
-        allPayments.addAll(newMonetaryAccountPayments)
-        allPayments.sortByDescending { it.payment.id }
-        val subPayments = ArrayList<PaymentViewHolder.MonetaryAccountPayment>()
-        for (i in 0 until Math.min(DASHBOARD_PAYMENTS_COUNT, allPayments.size)) {
-            subPayments.add(allPayments[i])
+    private fun processPayments(allPayments: MutableList<PaymentViewHolder.MonetaryAccountPayment>,
+                                newPayments: List<Payment>,
+                                monetaryAccount: MonetaryAccount,
+                                start: Date, // Should be start of yesterday
+                                end: Date) { // Should be end of yesterday
+
+        // Get the filtered payments from yesterday
+        for (payment in newPayments) {
+            val paymentDate = DateUtils.parse(payment.created)
+
+            // Make sure the payment is from yesterday
+            val isYesterday = ((paymentDate.equals(start) || paymentDate.after(start))
+                    && (paymentDate.equals(end) || paymentDate.before(end)))
+
+            // Make sure the payment is a withdrawal, does not matter what kind
+            val isWithdrawal = payment.amount.value.toDouble() < 0.0
+
+            // If is from correct date and withdrawal, we can process the amount that can be saved
+            if (isYesterday && isWithdrawal) {
+                allPayments.add(PaymentViewHolder.MonetaryAccountPayment(monetaryAccount, payment))
+            }
         }
-        adapter.setItems(subPayments)
+
+        // Calculate the amount that can be saved
+        totalAmountToSave = allPayments.map { calculateRemainingFraction(it.payment.amount.value.toDouble()) }.sum()
+        val amountSaved = Amount(totalAmountToSave.toString(), "EUR")
+        amountToSave.set(FormattingUtils.getFormattedAmount(amountSaved, true, showSign = false))
+
+        // Set the payments
+        adapter.setItems(allPayments)
+    }
+
+    fun calculateRemainingFraction(amount: Double) : Double {
+        val nonFractionalAmount = amount.toInt().toDouble()
+        return (amount - nonFractionalAmount).absoluteValue
+    }
+
+    fun onSaveClicked() {
+
+        // Create payment map
+        val paymentMap = HashMap<String, Any>()
+        val amount = Amount(totalAmountToSave.toString(), "EUR")
+        paymentMap[Payment.FIELD_AMOUNT] = amount
+        val pointerCounterparty = Pointer("", "IBAN")
+        paymentMap[Payment.FIELD_COUNTERPARTY_ALIAS] = pointerCounterparty
+        paymentMap[Payment.FIELD_DESCRIPTION] = "MoneyBunq"
+
+        // Create payment
+        //val payment = Payment.create(ApiUtils.getApiContext(), paymentMap, )
+
     }
 
     override fun onPaymentClicked(payment: Payment) {
-        // TODO:
+        // Don't do anything here
     }
 
     companion object {
@@ -135,7 +181,6 @@ class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListen
 
     public interface Listener {
         fun onAPIKeyNotSet()
-        fun onUserNotSet()
         fun onLoadAvatar(uuid: String)
         fun onError(message: String)
     }

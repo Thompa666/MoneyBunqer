@@ -10,66 +10,76 @@
             type="nl.menio.moneybunqer.ui.dashboard.DashboardViewModel"/>
     </data>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/white"
-        tools:context="nl.menio.moneybunqer.ui.dashboard.DashboardActivity">
+        android:fillViewport="true">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/items"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/white"
+            tools:context="nl.menio.moneybunqer.ui.dashboard.DashboardActivity">
 
-        <!--<FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:visibility="gone">
-
-            <include layout="@layout/view_bunq_rainbow"/>
-
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:paddingStart="@dimen/margin_default"
-                android:paddingEnd="@dimen/margin_default">
+                android:layout_height="220dp"
+                android:elevation="8dp">
 
-                <android.support.v4.widget.Space
+                <include
+                    layout="@layout/view_bunq_rainbow"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                <nl.menio.moneybunqer.utils.BunqCircleImageView
-                    android:id="@+id/avatar"
-                    android:layout_width="112dp"
-                    android:layout_height="112dp"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@{viewModel.amountToSave}"
+                        android:textSize="112sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        tools:text="€ 1,45"/>
 
-                <android.support.v4.widget.Space
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:textSize="@dimen/font_default"
+                        android:textColor="@color/white"
+                        android:backgroundTint="@color/bunq_orange"
+                        android:text="Save!"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:text="@{viewModel.totalBalance}"
-                    tools:text="€ 0,00"/>
+                </LinearLayout>
 
-                <android.support.v4.widget.Space
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/margin_default" />
+            </FrameLayout>
 
-            </LinearLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-        </FrameLayout>-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@{viewModel.totalBalance}"
+                android:textSize="@dimen/font_small"
+                android:visibility="gone"
+                tools:text="€ 8000,00"/>
 
-    </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
 
 </layout>
 

@@ -17,26 +17,13 @@
         android:background="@color/white"
         android:foreground="?attr/selectableItemBackground">
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_default">
-
-            <nl.menio.moneybunqer.utils.BunqCircleImageView
-                android:id="@+id/avatarContact"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/background_circle_gray_very_light"/>
-
-            <nl.menio.moneybunqer.utils.BunqCircleImageView
-                android:id="@+id/avatarAccount"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="@dimen/margin_default"
-                android:layout_marginEnd="@dimen/margin_none"
-                android:background="@drawable/background_circle_gray"/>
-
-        </FrameLayout>
+        <nl.menio.moneybunqer.utils.BunqCircleImageView
+            android:id="@+id/avatarContact"
+            android:layout_width="@dimen/avatar_default_size"
+            android:layout_height="@dimen/avatar_default_size"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:layout_marginStart="@dimen/margin_none"
+            android:background="@drawable/background_circle_gray_very_light"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -62,16 +49,41 @@
                 android:textColor="@color/gray_light"
                 tools:text="Description"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <nl.menio.moneybunqer.utils.BunqCircleImageView
+                    android:id="@+id/avatarAccount"
+                    android:layout_width="@dimen/font_default"
+                    android:layout_height="@dimen/font_default"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="@dimen/margin_none"
+                    android:background="@drawable/background_circle_gray_dark"/>
+
+                <TextView
+                    android:id="@+id/account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/font_tiny"
+                    android:textColor="@color/gray_dark"
+                    tools:text="Description"/>
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <TextView
             android:id="@+id/amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginEnd="@dimen/margin_none"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_medium_big"
+            android:textColor="@color/gray_light"
+            android:textSize="@dimen/font_item_amount"
             tools:text="€ 1,23"/>
 
     </LinearLayout>

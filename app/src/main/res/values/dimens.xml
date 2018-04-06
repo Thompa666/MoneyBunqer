@@ -12,5 +12,8 @@
     <dimen name="font_default">16sp</dimen>
     <dimen name="font_medium_big">18sp</dimen>
     <dimen name="font_big">20sp</dimen>
+    <dimen name="font_item_amount">28sp</dimen>
+
+    <dimen name="avatar_default_size">48dp</dimen>
 
 </resources>

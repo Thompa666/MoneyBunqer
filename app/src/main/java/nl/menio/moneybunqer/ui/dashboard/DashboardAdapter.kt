@@ -6,6 +6,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import nl.menio.moneybunqer.R
 import nl.menio.moneybunqer.databinding.ItemPaymentBinding
+import nl.menio.moneybunqer.databinding.ItemPaymentSimpleBinding
+import nl.menio.moneybunqer.network.BunqConnector
+import nl.menio.moneybunqer.ui.viewholders.DefaultViewHolder
+import nl.menio.moneybunqer.ui.viewholders.PaymentSimpleViewHolder
 import nl.menio.moneybunqer.ui.viewholders.PaymentViewHolder
 
 class DashboardAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -28,23 +32,23 @@ class DashboardAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         onPaymentClickedListener = listener
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ViewType.PAYMENT.ordinal -> onCreateViewHolderPayment(parent)
-            else -> null
+            else -> DefaultViewHolder(parent.context)
         }
     }
 
-    private fun onCreateViewHolderPayment(parent: ViewGroup) : PaymentViewHolder {
+    private fun onCreateViewHolderPayment(parent: ViewGroup) : PaymentSimpleViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding: ItemPaymentBinding = DataBindingUtil.inflate(inflater, R.layout.item_payment, parent, false)
-        return PaymentViewHolder(binding, onPaymentClickedListener)
+        val binding: ItemPaymentSimpleBinding = DataBindingUtil.inflate(inflater, R.layout.item_payment_simple, parent, false)
+        return PaymentSimpleViewHolder(binding, onPaymentClickedListener)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = data[position]
         when (item) {
-            is PaymentViewHolder.MonetaryAccountPayment -> (holder as PaymentViewHolder).bind(item)
+            is PaymentViewHolder.MonetaryAccountPayment -> (holder as PaymentSimpleViewHolder).bind(item)
         }
     }
 
@@ -62,6 +66,20 @@ class DashboardAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return when (item) {
             is PaymentViewHolder.MonetaryAccountPayment -> 0x100000000 + item.payment.id
             else -> super.getItemId(position)
+        }
+    }
+
+    companion object {
+        val TAG: String = BunqConnector::class.java.simpleName
+
+        private var singleton: BunqConnector? = null
+
+        fun init() {
+            singleton = BunqConnector()
+        }
+
+        fun getInstance() : BunqConnector {
+            return singleton ?: throw RuntimeException("Not initialized")
         }
     }
 

@@ -1,35 +1,23 @@
 package nl.menio.moneybunqer.network
 
 import android.os.AsyncTask
+import android.os.Build
+import com.bunq.sdk.context.ApiContext
+import com.bunq.sdk.context.ApiEnvironmentType
+import com.bunq.sdk.context.BunqContext
 import com.bunq.sdk.exception.TooManyRequestsException
+import com.bunq.sdk.exception.UnauthorizedException
 import com.bunq.sdk.model.generated.endpoint.*
 import nl.menio.moneybunqer.BunqPreferences
-import nl.menio.moneybunqer.utils.ApiUtils
 
 class BunqConnector {
 
-    private val bunqPreferences = BunqPreferences.getInstance()
-
-    companion object {
-        val TAG: String = BunqConnector::class.java.simpleName
-
-        private var singleton: BunqConnector? = null
-
-        fun init() {
-            singleton = BunqConnector()
-        }
-
-        fun getInstance() : BunqConnector {
-            return singleton ?: throw RuntimeException("Not initialized")
-        }
-    }
-
-    fun listUsers(listener: OnListUsersListener) {
-        ListUsersTask(listener).execute()
+    fun create(apiKey: String, listener: ApiContextCreateListener) {
+        CreateApiContextTask(apiKey, listener).execute()
     }
 
     fun getUser(listener: OnGetUserListener) {
-        GetUSerTask(listener).execute()
+        GetUserTask(listener).execute()
     }
 
     fun listMonetaryAccounts(listener: OnListMonetaryAccountsListener) {
@@ -44,28 +32,28 @@ class BunqConnector {
         ListPaymentsTask(monetaryAccountId, listener).execute()
     }
 
-    private class ListUsersTask(val listener: OnListUsersListener)
-        : AsyncTask<Void, Void, List<User>>() {
-        override fun doInBackground(vararg params: Void?): List<User> {
-            val apiContext = ApiUtils.getApiContext()
-            val response = User.list(apiContext)
-            return response.value
+    private class CreateApiContextTask(val apiKey: String, val listener: ApiContextCreateListener) : AsyncTask<Void, Void, ApiContext?>() {
+        override fun doInBackground(vararg p0: Void?): ApiContext? {
+            val deviceDescription = "MoneyBunq/${Build.DEVICE}"
+            val apiContext = ApiContext.create(ApiEnvironmentType.PRODUCTION, apiKey, deviceDescription)
+            BunqPreferences.getInstance().saveApiContext(apiContext)
+            return apiContext
         }
 
-        override fun onPostExecute(result: List<User>?) {
+        override fun onPostExecute(result: ApiContext?) {
             if (result != null) {
-                listener.onListUsersSuccess(result)
+                listener.onApiContextCreateSuccess(result)
             } else {
-                listener.onListUsersError()
+                listener.onApiContextCreateError()
             }
         }
     }
 
-    private class GetUSerTask(val listener: OnGetUserListener)
+    private class GetUserTask(val listener: OnGetUserListener)
         : AsyncTask<Void, Void, User>() {
         override fun doInBackground(vararg params: Void?): User {
-            val userId = BunqPreferences.getInstance().getDefaultUserId()
-            val response = User.get(ApiUtils.getApiContext(), userId)
+            ensureSession()
+            val response = User.get()
             return response.value
         }
 
@@ -81,9 +69,8 @@ class BunqConnector {
     private class ListMonetaryAccountsTask(val listener: OnListMonetaryAccountsListener)
         : AsyncTask<Void, Void, List<MonetaryAccount>>() {
         override fun doInBackground(vararg p0: Void?): List<MonetaryAccount> {
-            val apiContext = ApiUtils.getApiContext()
-            val userId = BunqPreferences.getInstance().getDefaultUserId()
-            val response = MonetaryAccount.list(apiContext, userId)
+            ensureSession()
+            val response = MonetaryAccount.list()
             return response.value
         }
 
@@ -98,8 +85,8 @@ class BunqConnector {
 
     private class GetAvatarTask(val uuid: String) : AsyncTask<Void, Void, Avatar>() {
         override fun doInBackground(vararg params: Void?): Avatar {
-            val apiContext = ApiUtils.getApiContext()
-            val response = Avatar.get(apiContext, uuid)
+            ensureSession()
+            val response = Avatar.get()
             return response.value
         }
     }
@@ -107,9 +94,9 @@ class BunqConnector {
     private class GetAttachmentPublicContentTask(val attachmentPublicUuid: String, val listener: OnGetAttachmentPublicContentListener)
         : AsyncTask<Void, Void, ByteArray>() {
         override fun doInBackground(vararg params: Void?): ByteArray? {
+            ensureSession()
             try {
-                val apiContext = ApiUtils.getApiContext()
-                val response = AttachmentPublicContent.list(apiContext, attachmentPublicUuid)
+                val response = AttachmentPublicContent.list(attachmentPublicUuid)
                 return response.value
             } catch (e: TooManyRequestsException) {
                 listener.onGetAttachmentPublicContentTooManyRequestsError(attachmentPublicUuid)
@@ -128,9 +115,8 @@ class BunqConnector {
 
     private class ListPaymentsTask(val monetaryAccountId: Int, val listener: OnListPaymentsListener) : AsyncTask<Void, Void, List<Payment>>() {
         override fun doInBackground(vararg params: Void?): List<Payment> {
-            val apiContext = ApiUtils.getApiContext()
-            val userId = BunqPreferences.getInstance().getDefaultUserId()
-            val response = Payment.list(apiContext, userId, monetaryAccountId)
+            ensureSession()
+            val response = Payment.list(monetaryAccountId)
             return response.value
         }
 
@@ -143,9 +129,37 @@ class BunqConnector {
         }
     }
 
-    interface OnListUsersListener {
-        fun onListUsersSuccess(users: List<User>)
-        fun onListUsersError()
+    companion object {
+        val TAG: String = BunqConnector::class.java.simpleName
+
+        private var singleton: BunqConnector? = null
+        private var apiContext: ApiContext? = null
+
+        fun init() {
+            singleton = BunqConnector()
+        }
+
+        fun getInstance() : BunqConnector {
+            return singleton ?: throw RuntimeException("Not initialized")
+        }
+
+        fun ensureSession() {
+            val loadedApiContext = apiContext
+            if (loadedApiContext == null) {
+                val savedApiContext = BunqPreferences.getInstance().getApiContext()
+                if (savedApiContext != null) {
+                    apiContext = savedApiContext
+                    try {
+                        BunqContext.loadApiContext(savedApiContext)
+                    } catch (e: UnauthorizedException) {
+                        savedApiContext.resetSession()
+                        BunqContext.loadApiContext(savedApiContext)
+                    }
+                }
+            } else {
+                loadedApiContext.ensureSessionActive()
+            }
+        }
     }
 
     interface OnGetUserListener {
@@ -167,5 +181,10 @@ class BunqConnector {
     interface OnListPaymentsListener {
         fun onListPaymentsSuccess(payments: List<Payment>)
         fun onListPaymentsError()
+    }
+
+    interface ApiContextCreateListener {
+        fun onApiContextCreateSuccess(apiContext: ApiContext)
+        fun onApiContextCreateError()
     }
 }

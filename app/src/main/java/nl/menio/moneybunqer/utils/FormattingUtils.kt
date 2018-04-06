@@ -15,8 +15,10 @@ class FormattingUtils {
         val TAG: String = FormattingUtils::class.java.simpleName
 
         const val EMPTY_AMOUNT_STRING = "-,-"
+        const val PREFIX_SIGN_PLUS = "+"
+        const val EMPTY_STRING = ""
 
-        fun getFormattedAmount(amount: Amount, showCurrency: Boolean = false) : Spannable {
+        fun getFormattedAmount(amount: Amount, showCurrency: Boolean = false, showSign: Boolean = false) : Spannable {
             val locale = Locale.getDefault()
             val amountDouble = amount.value.toDouble()
 
@@ -27,6 +29,8 @@ class FormattingUtils {
             if (showCurrency) {
                 spannableBuilder.append(Currency.getInstance(amount.currency).getSymbol(locale), currencyStyleSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
+            val prefixSign = if (showSign && amountDouble > 0) PREFIX_SIGN_PLUS else EMPTY_STRING
+            spannableBuilder.append(prefixSign)
             spannableBuilder.append(Math.floor(amountDouble).toInt().toString())
             spannableBuilder.append(DecimalFormat("#.00").format(amountDouble - Math.floor(amountDouble)), fractionStyleSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             return spannableBuilder
