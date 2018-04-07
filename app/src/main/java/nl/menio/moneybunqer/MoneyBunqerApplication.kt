@@ -6,7 +6,7 @@ import nl.menio.moneybunqer.data.PaymentRepository
 import nl.menio.moneybunqer.data.UserRepository
 import nl.menio.moneybunqer.network.BunqConnector
 import nl.menio.moneybunqer.utils.AttachmentManager
-import st.lowlevel.storo.StoroBuilder
+import nl.menio.moneybunqer.utils.Localizer
 
 class MoneyBunqerApplication : Application() {
 
@@ -14,6 +14,7 @@ class MoneyBunqerApplication : Application() {
         super.onCreate()
 
         // Needed for all other dependencies
+        Localizer.init(this)
         BunqPreferences.init(this)
         BunqConnector.init()
 

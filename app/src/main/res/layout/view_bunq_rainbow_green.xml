@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:layout_height="match_parent">
 
-    <include
+    <View
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        layout="@layout/view_bunq_rainbow_green"/>
+        android:background="@color/bunq_green_dark"/>
 
-    <include
+    <View
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        layout="@layout/view_bunq_rainbow_blue"/>
+        android:background="@color/bunq_green"/>
 
-    <include
+    <View
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        layout="@layout/view_bunq_rainbow_red"/>
+        android:background="@color/bunq_green_light"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/bunq_green_very_light"/>
 
 </LinearLayout>

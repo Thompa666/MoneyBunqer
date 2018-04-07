@@ -2,6 +2,7 @@ package nl.menio.moneybunqer.network
 
 import android.os.AsyncTask
 import android.os.Build
+import android.util.Log
 import com.bunq.sdk.context.ApiContext
 import com.bunq.sdk.context.ApiEnvironmentType
 import com.bunq.sdk.context.BunqContext
@@ -30,6 +31,10 @@ class BunqConnector {
 
     fun listPayments(monetaryAccountId: Int, listener: OnListPaymentsListener) {
         ListPaymentsTask(monetaryAccountId, listener).execute()
+    }
+
+    fun listAllPayments(monetaryAccountIds: List<Int>, listener: OnListPaymentsListener) {
+        ListAllPaymentsTask(monetaryAccountIds, listener).execute()
     }
 
     private class CreateApiContextTask(val apiKey: String, val listener: ApiContextCreateListener) : AsyncTask<Void, Void, ApiContext?>() {
@@ -126,6 +131,23 @@ class BunqConnector {
             } else {
                 listener.onListPaymentsError()
             }
+        }
+    }
+
+    private class ListAllPaymentsTask(val monetaryAccountIds: List<Int>, val listener: OnListPaymentsListener) : AsyncTask<Void, Void, List<Payment>>() {
+        override fun doInBackground(vararg p0: Void?): List<Payment> {
+            val result = ArrayList<Payment>()
+            for (monetaryAccountId in monetaryAccountIds) {
+                ensureSession()
+                val response = Payment.list(monetaryAccountId)
+                Log.d(TAG, "Got ${response.value.size} payments for account ID $monetaryAccountId")
+                result.addAll(response.value)
+            }
+            return result
+        }
+
+        override fun onPostExecute(result: List<Payment>) {
+            listener.onListPaymentsSuccess(result)
         }
     }
 

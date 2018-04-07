@@ -25,6 +25,19 @@ class PaymentRepository : Repository() {
         }
     }
 
+    fun getPayments(refresh: Boolean, monetaryAccountIds: List<Int>, listener: BunqConnector.OnListPaymentsListener) {
+        // FIXME: Cache is ignored for now
+        bunqConnector.listAllPayments(monetaryAccountIds, object : BunqConnector.OnListPaymentsListener {
+            override fun onListPaymentsSuccess(payments: List<Payment>) {
+                listener.onListPaymentsSuccess(payments)
+            }
+
+            override fun onListPaymentsError() {
+                listener.onListPaymentsError()
+            }
+        })
+    }
+
     companion object {
         val TAG: String = PaymentRepository::class.java.simpleName
 

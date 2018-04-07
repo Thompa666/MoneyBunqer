@@ -5,81 +5,86 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.text.TextUtils"/>
         <variable
             name="viewModel"
             type="nl.menio.moneybunqer.ui.dashboard.DashboardViewModel"/>
     </data>
 
-    <ScrollView
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:contentScrim="@color/white">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                    android:background="@color/white"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                    app:contentInsetEnd="0dp"
+                    app:contentInsetStart="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:paddingStart="@dimen/margin_default"
+                            android:paddingEnd="@dimen/margin_default">
+
+                            <TextView
+                                android:id="@+id/title"
+                                style="@style/Text.Toolbar"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:text="@{@string/dashboard_greeting(viewModel.userName)}" />
+
+                            <nl.menio.moneybunqer.utils.BunqCircleImageView
+                                android:id="@+id/avatar"
+                                android:layout_width="@dimen/profile_default_size"
+                                android:layout_height="@dimen/profile_default_size"
+                                android:layout_gravity="center_vertical|end"/>
+
+                        </FrameLayout>
+
+                        <include
+                            android:layout_height="@dimen/toolbar_rainbow_height"
+                            android:layout_width="match_parent"
+                            layout="@layout/view_bunq_rainbow"/>
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.Toolbar>
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/items"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/white"
-            tools:context="nl.menio.moneybunqer.ui.dashboard.DashboardActivity">
+            android:paddingTop="@dimen/margin_medium"
+            android:paddingBottom="@dimen/margin_medium"
+            android:clipToPadding="false"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:elevation="8dp">
-
-                <include
-                    layout="@layout/view_bunq_rainbow"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@{viewModel.amountToSave}"
-                        android:textSize="112sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/white"
-                        tools:text="€ 1,45"/>
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|center_horizontal"
-                        android:layout_marginBottom="@dimen/margin_small"
-                        android:layout_marginTop="@dimen/margin_small"
-                        android:textSize="@dimen/font_default"
-                        android:textColor="@color/white"
-                        android:backgroundTint="@color/bunq_orange"
-                        android:text="Save!"/>
-
-                </LinearLayout>
-
-            </FrameLayout>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/items"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:text="@{viewModel.totalBalance}"
-                android:textSize="@dimen/font_small"
-                android:visibility="gone"
-                tools:text="€ 8000,00"/>
-
-        </LinearLayout>
-
-    </ScrollView>
+    </android.support.design.widget.CoordinatorLayout>
 
 </layout>
 

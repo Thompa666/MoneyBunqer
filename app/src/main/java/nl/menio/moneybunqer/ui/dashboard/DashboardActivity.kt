@@ -4,12 +4,12 @@ import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import nl.menio.moneybunqer.R
 import nl.menio.moneybunqer.databinding.ActivityDashboardBinding
 import nl.menio.moneybunqer.ui.BaseActivity
+import nl.menio.moneybunqer.ui.chooseaccount.ChooseAccountDialog
 import nl.menio.moneybunqer.ui.onboarding.OnboardingActivity
 
 class DashboardActivity : BaseActivity(), DashboardViewModel.Listener {
@@ -26,12 +26,13 @@ class DashboardActivity : BaseActivity(), DashboardViewModel.Listener {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard)
         binding?.viewModel = viewModel
+        setSupportActionBar(binding?.toolbar)
+
         binding?.items?.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding?.items?.itemAnimator = DefaultItemAnimator()
-        binding?.items?.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
         binding?.items?.adapter = viewModel?.getAdapter()
 
-        viewModel?.showDashBoard()
+        viewModel?.loadDashboard()
     }
 
     override fun onAPIKeyNotSet() {
@@ -39,7 +40,12 @@ class DashboardActivity : BaseActivity(), DashboardViewModel.Listener {
     }
 
     override fun onLoadAvatar(uuid: String) {
-        //binding?.avatar?.setAttachmentPublicUuid(uuid)
+        binding?.avatar?.setAttachmentPublicUuid(uuid)
+    }
+
+    override fun onSelectTotalBalanceAccounts() {
+        val dialog = ChooseAccountDialog.getInstance()
+        dialog.show(supportFragmentManager, ChooseAccountDialog.TAG)
     }
 
     override fun onError(message: String) {

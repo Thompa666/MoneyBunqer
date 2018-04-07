@@ -2,7 +2,7 @@
 <resources>
 
     <color name="colorPrimary">@color/bunq_blue_light</color>
-    <color name="colorPrimaryDark">@color/bunq_blue_dark</color>
+    <color name="colorPrimaryDark">@color/gray_light</color>
     <color name="colorAccent">@color/bunq_red</color>
 
     <color name="bunq_green_dark">#238647</color>
@@ -21,7 +21,8 @@
     <color name="white">#ffffff</color>
     <color name="black">@android:color/black</color>
     <color name="gray_dark">#333333</color>
-    <color name="gray_light">#999999</color>
+    <color name="gray_medium">#999999</color>
+    <color name="gray_light">#cccccc</color>
     <color name="gray_very_light">#eeeeee</color>
 
     <color name="font_title">@color/bunq_red_dark</color>

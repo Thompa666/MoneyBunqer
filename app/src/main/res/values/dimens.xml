@@ -2,6 +2,7 @@
 <resources>
 
     <dimen name="margin_none">0dp</dimen>
+    <dimen name="margin_tiny">4dp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_medium">12dp</dimen>
     <dimen name="margin_default">16dp</dimen>
@@ -14,6 +15,13 @@
     <dimen name="font_big">20sp</dimen>
     <dimen name="font_item_amount">28sp</dimen>
 
-    <dimen name="avatar_default_size">48dp</dimen>
+    <dimen name="toolbar_rainbow_height">2dp</dimen>
+
+    <dimen name="profile_default_size">36dp</dimen>
+    <dimen name="avatar_default_size">36dp</dimen>
+
+    <dimen name="dashboard_item_height">200dp</dimen>
+    <dimen name="dashboard_item_corner_radius">6dp</dimen>
+    <dimen name="dashboard_item_elevation">6dp</dimen>
 
 </resources>

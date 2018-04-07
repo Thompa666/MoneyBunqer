@@ -2,7 +2,11 @@
 
     <string name="app_name">MoneyBunqer</string>
 
-    <string name="onboarding_api_key_explanation">To connect to yout bank account, you need a production API key or a sandbox API key.\n\nYou can generate a production API key from the bunq app. A sandbox key can be obtained by contacting the support.</string>
+    <string name="dashboard_greeting_noname">Hey!</string>
+    <string name="dashboard_greeting">Hey, %s!</string>
+    <string name="dashboard_default_username">bunqer</string>
+
+    <string name="onboarding_api_key_explanation">To connect to your bank account, you need a production API key or a sandbox API key.\n\nYou can generate a production API key from the bunq app. A sandbox key can be obtained by contacting the support.</string>
     <string name="onboarding_api_key_hint">API key</string>
     <string name="onboarding_save">Save</string>
 </resources>
