@@ -27,7 +27,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/background_gradient_red"/>
+                android:background="@drawable/background_gradient_white"/>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -50,7 +50,7 @@
                         android:text="Total balance"
                         android:textSize="@dimen/font_small"
                         android:textStyle="bold"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/black" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -59,7 +59,7 @@
                         android:text="@{totalBalance}"
                         android:textSize="48sp"
                         android:textStyle="bold"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         tools:text="€ 1,45"/>
 
                 </LinearLayout>
@@ -71,6 +71,7 @@
                     android:layout_gravity="top|end"
                     android:padding="@dimen/margin_small"
                     android:src="@drawable/ic_filter_list_white_24px"
+                    android:tint="@color/gray_dark"
                     android:background="@null"
                     android:foreground="?attr/selectableItemBackgroundBorderless"/>
 
