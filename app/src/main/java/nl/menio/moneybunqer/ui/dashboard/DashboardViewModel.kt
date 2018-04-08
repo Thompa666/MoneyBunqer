@@ -10,6 +10,7 @@ import nl.menio.moneybunqer.R
 import nl.menio.moneybunqer.data.MonetaryAccountRepository
 import nl.menio.moneybunqer.data.PaymentRepository
 import nl.menio.moneybunqer.data.UserRepository
+import nl.menio.moneybunqer.model.totalbalance.TotalBalanceConfiguration
 import nl.menio.moneybunqer.network.BunqConnector
 import nl.menio.moneybunqer.ui.viewholders.DashboardScrapsItem
 import nl.menio.moneybunqer.ui.viewholders.PaymentViewHolder
@@ -25,8 +26,8 @@ class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListen
     val userName = ObservableField<String>()
 
     private val totalBalanceActionListener = object: OnDashboardTotalBalanceActionListener {
-        override fun onFilterTotalBalanceClicked() {
-            listener?.onSelectTotalBalanceAccounts()
+        override fun onFilterTotalBalanceClicked(configuration: TotalBalanceConfiguration) {
+            listener?.onSelectTotalBalanceAccounts(configuration)
         }
     }
 
@@ -110,11 +111,15 @@ class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListen
     }
 
     private fun updateMonetaryAccounts(monetaryAccounts: List<MonetaryAccount>) {
+        for (monetaryAccount in monetaryAccounts) {
+            Log.d(TAG, "Got monetary account with ID: ${monetaryAccount.monetaryAccountBank.id}")
+        }
         updateTotalBalance(monetaryAccounts)
     }
 
     private fun updateTotalBalance(monetaryAccounts: List<MonetaryAccount>) {
-        val totalBalanceItem = DashboardTotalBalanceItem(monetaryAccounts)
+        val configuration = TotalBalanceConfiguration("Total balance", MonetaryAccountUtils.getMonetaryAccountIds(monetaryAccounts))
+        val totalBalanceItem = DashboardTotalBalanceItem(configuration)
         this.totalBalanceItem = totalBalanceItem
         showDashBoard()
     }
@@ -132,21 +137,6 @@ class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListen
         showDashBoard()
     }
 
-    /*fun onSaveClicked() {
-
-        // Create payment map
-        val paymentMap = HashMap<String, Any>()
-        val amount = Amount(totalAmountToSave.toString(), "EUR")
-        paymentMap[Payment.FIELD_AMOUNT] = amount
-        val pointerCounterparty = Pointer("", "IBAN")
-        paymentMap[Payment.FIELD_COUNTERPARTY_ALIAS] = pointerCounterparty
-        paymentMap[Payment.FIELD_DESCRIPTION] = "MoneyBunqer"
-
-        // Create payment
-        //val payment = Payment.create(ApiUtils.getApiContext(), paymentMap, )
-
-    }*/
-
     override fun onPaymentClicked(payment: Payment) {
         // Don't do anything here
     }
@@ -159,6 +149,6 @@ class DashboardViewModel : ViewModel(), PaymentViewHolder.OnPaymentClickedListen
         fun onAPIKeyNotSet()
         fun onLoadAvatar(uuid: String)
         fun onError(message: String)
-        fun onSelectTotalBalanceAccounts()
+        fun onSelectTotalBalanceAccounts(configuration: TotalBalanceConfiguration)
     }
 }

@@ -25,6 +25,10 @@ class MonetaryAccountRepository : Repository() {
         }
     }
 
+    fun getMonetaryAccounts() : List<MonetaryAccount> {
+        return ArrayList(cachedMonetaryAccounts)
+    }
+
     fun getAccountNameForIban(iban: String) : String {
         val monetaryAccounts = cachedMonetaryAccounts
         var matchingMonetaryAccount: MonetaryAccount? = null

@@ -6,6 +6,9 @@
     <data>
         <import type="android.text.Spannable"/>
         <variable
+            name="title"
+            type="String"/>
+        <variable
             name="totalBalance"
             type="android.text.Spannable"/>
     </data>
@@ -47,7 +50,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
-                        android:text="Total balance"
+                        android:text="@{title}"
                         android:textSize="@dimen/font_small"
                         android:textStyle="bold"
                         android:textColor="@color/black" />

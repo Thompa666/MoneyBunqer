@@ -2,12 +2,17 @@ package nl.menio.moneybunqer
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import com.bunq.sdk.context.ApiContext
 import com.securepreferences.SecurePreferences
 
 class BunqPreferences(private val context: Context) {
 
     private val prefs = SecurePreferences(context)
+
+    fun getPreferences() : SharedPreferences {
+        return prefs
+    }
 
     fun saveApiContext(apiContext: ApiContext) {
         prefs.edit().putString(KEY_API_CONTEXT, apiContext.toJson()).apply()
